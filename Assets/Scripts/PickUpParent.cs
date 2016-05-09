@@ -8,6 +8,7 @@ public class PickUpParent : MonoBehaviour {
     SteamVR_TrackedObject trackedObj;
     SteamVR_Controller.Device device;
 
+    public Transform sphere;
 
     void Awake () {
         trackedObj = GetComponent<SteamVR_TrackedObject>();
@@ -45,6 +46,16 @@ public class PickUpParent : MonoBehaviour {
         {
             Debug.Log("You activated 'PressUp' on the trigger");
         }
+
+        if (device.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad))
+        {
+            Debug.Log("You activated 'PressUp' on the TouchPad");
+
+            sphere.transform.position = Vector3.zero;
+            var sphereRigidBody = sphere.GetComponent<Rigidbody>();
+            sphereRigidBody.velocity = Vector3.zero;
+            sphereRigidBody.angularVelocity = Vector3.zero;
+        }
     }
 
     void OnTriggerStay(Collider col)
@@ -72,7 +83,16 @@ public class PickUpParent : MonoBehaviour {
 
     void tossObject(Rigidbody rigidbody)
     {
-        rigidbody.velocity = device.velocity;
-        rigidbody.angularVelocity = device.angularVelocity;
+        Transform origin = trackedObj.origin ? trackedObj.origin : trackedObj.transform.parent;
+
+        if (origin != null)
+        {
+            rigidbody.velocity = origin.TransformVector(device.velocity);
+            rigidbody.angularVelocity = origin.TransformVector(device.angularVelocity);
+        } else
+        {
+            rigidbody.velocity = device.velocity;
+            rigidbody.angularVelocity = device.angularVelocity;
+        }
     }
 }
