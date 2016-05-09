@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 [RequireComponent(typeof(SteamVR_TrackedObject))]
 public class PickUpParent : MonoBehaviour {
@@ -64,6 +65,14 @@ public class PickUpParent : MonoBehaviour {
             
             col.gameObject.transform.SetParent(null);
             col.attachedRigidbody.isKinematic = false;
+
+            tossObject(col.attachedRigidbody);
         }
+    }
+
+    void tossObject(Rigidbody rigidbody)
+    {
+        rigidbody.velocity = device.velocity;
+        rigidbody.angularVelocity = device.angularVelocity;
     }
 }
